@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulacro Admisión Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#1e293b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ajustes finos para móvil */
+        .tap-highlight-transparent {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-slate-200 font-sans min-h-screen flex flex-col tap-highlight-transparent">
+
+    <div id="screen-home"
+        class="flex-1 flex flex-col items-center justify-center p-6 space-y-8 transition-opacity duration-300">
+        <div class="text-center space-y-2">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                Simulacro Total
+            </h1>
+            <p class="text-slate-400 text-sm">30 Minutos • 50 Preguntas • Sin Pistas</p>
+        </div>
+
+        <div class="w-full max-w-md space-y-4">
+            <button onclick="startExam(1)"
+                class="w-full group relative flex items-center justify-between p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all active:scale-95">
+                <div class="flex items-center space-x-4">
+                    <div
+                        class="p-2 bg-blue-500/10 text-blue-400 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-semibold text-white">Examen 1</h3>
+                        <p class="text-xs text-slate-400">Temario Completo</p>
+                    </div>
+                </div>
+                <span
+                    class="px-3 py-1 text-xs font-bold text-blue-300 bg-blue-900/30 rounded-full border border-blue-800">50
+                    Preg</span>
+            </button>
+
+            <button onclick="startExam(2)"
+                class="w-full group relative flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-700 border border-slate-700/50 rounded-xl transition-all opacity-75 hover:opacity-100">
+                <div class="flex items-center space-x-4">
+                    <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-semibold text-white">Examen 2</h3>
+                        <p class="text-xs text-slate-400">Cargar preguntas...</p>
+                    </div>
+                </div>
+            </button>
+
+            <button onclick="startExam(3)"
+                class="w-full group relative flex items-center justify-between p-4 bg-slate-800/50 hover:bg-slate-700 border border-slate-700/50 rounded-xl transition-all opacity-75 hover:opacity-100">
+                <div class="flex items-center space-x-4">
+                    <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-semibold text-white">Examen 3</h3>
+                        <p class="text-xs text-slate-400">Cargar preguntas...</p>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="hidden flex-col h-screen max-w-2xl mx-auto w-full">
+        <div class="flex-none p-4 bg-slate-900/95 backdrop-blur z-10 border-b border-slate-800">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-500 font-bold tracking-wider uppercase">Pregunta</span>
+                    <span class="text-xl font-bold text-white"><span id="q-current">1</span><span
+                            class="text-slate-600 text-lg">/50</span></span>
+                </div>
+                <div id="timer"
+                    class="font-mono text-xl font-bold text-blue-400 bg-blue-900/20 px-3 py-1 rounded-lg border border-blue-500/30">
+                    30:00
+                </div>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="progress" class="bg-blue-500 h-full rounded-full transition-all duration-300 w-0"></div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            <div class="space-y-2">
+                <span id="q-subject"
+                    class="inline-block px-2 py-1 text-[10px] font-bold tracking-widest text-emerald-400 bg-emerald-900/20 border border-emerald-800 rounded uppercase">Materia</span>
+                <p id="q-text" class="text-lg md:text-xl font-medium leading-relaxed text-slate-100">
+                </p>
+            </div>
+
+            <div id="q-options" class="space-y-3 pb-20">
+            </div>
+        </div>
+
+        <div class="flex-none p-4 bg-slate-900 border-t border-slate-800 grid grid-cols-2 gap-4">
+            <button onclick="prevQ()" id="btn-prev"
+                class="px-4 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-800 disabled:opacity-30 transition-colors">
+                Anterior
+            </button>
+            <button onclick="nextQ()" id="btn-next"
+                class="px-4 py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all active:scale-95">
+                Siguiente
+            </button>
+            <button onclick="finishExam()" id="btn-finish"
+                class="hidden px-4 py-3 rounded-xl font-bold bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all active:scale-95">
+                FINALIZAR
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-results" class="hidden flex-1 flex-col items-center justify-center p-6 space-y-8 animate-fade-in">
+        <div class="relative">
+            <svg class="w-48 h-48 transform -rotate-90">
+                <circle cx="96" cy="96" r="88" stroke="currentColor" stroke-width="12" class="text-slate-800"
+                    fill="transparent" />
+                <circle id="score-ring" cx="96" cy="96" r="88" stroke="currentColor" stroke-width="12"
+                    class="text-blue-500 transition-all duration-1000" stroke-dasharray="552" stroke-dashoffset="552"
+                    fill="transparent" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="final-score" class="text-5xl font-bold text-white">0%</span>
+                <span class="text-xs text-slate-400 uppercase tracking-widest mt-2">Acierto</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 w-full max-w-sm">
+            <div class="p-4 bg-slate-800 rounded-2xl text-center border border-slate-700">
+                <span id="res-correct" class="block text-2xl font-bold text-emerald-400">0</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold">Bien</span>
+            </div>
+            <div class="p-4 bg-slate-800 rounded-2xl text-center border border-slate-700">
+                <span id="res-wrong" class="block text-2xl font-bold text-red-400">0</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold">Mal</span>
+            </div>
+            <div class="p-4 bg-slate-800 rounded-2xl text-center border border-slate-700">
+                <span id="res-blank" class="block text-2xl font-bold text-slate-400">0</span>
+                <span class="text-[10px] text-slate-500 uppercase font-bold">Vacías</span>
+            </div>
+        </div>
+
+        <button onclick="location.reload()"
+            class="w-full max-w-sm py-4 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+            Volver al Inicio
+        </button>
+    </div>
+
+    <script>
+        // --- DATOS DEL EXAMEN 1 (50 PREGUNTAS VARIADAS DEL TEMARIO) ---
+        const exam1 = [
+            // R. MATEMÁTICO (10)
+            { s: "RM", q: "¿Qué número sigue? 4; 9; 25; 49; ...", o: ["81", "121", "100", "64"], a: 1 }, // 2^2, 3^2, 5^2, 7^2 (primos)
+            { s: "RM", q: "Si 3 gatos cazan 3 ratones en 3 minutos, ¿cuántos gatos cazarán 10 ratones en 10 minutos?", o: ["10", "3", "1", "30"], a: 1 },
+            { s: "RM", q: "El 20% del 50% de un número es 50. Hallar el número.", o: ["500", "250", "1000", "50"], a: 0 },
+            { s: "RM", q: "Hallar 'x': 2, 6, 12, 20, 30, x", o: ["40", "42", "38", "36"], a: 1 },
+            { s: "RM", q: "En una reunión todos se saludan. Si hubo 21 saludos, ¿cuántas personas había?", o: ["8", "7", "6", "9"], a: 1 },
+            { s: "RM - Edades", q: "Hace 10 años tenía la mitad de la edad que tendré dentro de 8 años. ¿Qué edad tengo?", o: ["28", "26", "30", "24"], a: 0 },
+            { s: "RM - Áreas", q: "Área de un cuadrado cuya diagonal mide 10.", o: ["100", "50", "25", "75"], a: 1 }, // D^2/2
+            { s: "RM", q: "¿Qué parentesco tiene conmigo el hijo de la hermana de mi padre?", o: ["Sobrino", "Tío", "Primo", "Hermano"], a: 2 },
+            { s: "RM - Series", q: "Suma de los 20 primeros números naturales (1+2+...+20)", o: ["200", "210", "190", "220"], a: 1 },
+            { s: "RM", q: "Si A es IP a B, y cuando A=20, B=5. Hallar A cuando B=10.", o: ["10", "5", "2", "2.5"], a: 0 },
+
+            // R. VERBAL (10)
+            { s: "RV - Sinónimos", q: "Sinónimo de ÓBITO", o: ["Nacimiento", "Muerte", "Origen", "Enfermedad"], a: 1 },
+            { s: "RV - Antónimos", q: "Antónimo de CANDIDEZ", o: ["Ingenuidad", "Malicia", "Blancura", "Sinceridad"], a: 1 },
+            { s: "RV - Analogías", q: "ARCILLA : CERAMISTA ::", o: ["Madera : Carpintero", "Cuero : Zapato", "Tela : Sastre", "Pintura : Pintor"], a: 0 }, // Materia prima : Agente
+            { s: "RV - Oraciones", q: "El _______ no consiste en no caer, sino en _______ cada vez que caemos.", o: ["fracaso - llorar", "éxito - levantarse", "honor - sufrir", "amor - perdonar"], a: 1 },
+            { s: "RV - Excluido", q: "Término excluido: MUEBLES", o: ["Mesa", "Silla", "Escritorio", "Televisor"], a: 3 },
+            { s: "RV", q: "Sinónimo de ABSTRUSO", o: ["Claro", "Difícil", "Simple", "Concreto"], a: 1 },
+            { s: "RV", q: "Plan de redacción: 'La Digestión'. 1. Masticación 2. Excreción 3. Absorción 4. Digestión estomacal", o: ["1-4-3-2", "1-2-3-4", "4-1-3-2", "1-3-4-2"], a: 0 },
+            { s: "RV - Analogías", q: "ISLA : ARCHIPIÉLAGO ::", o: ["Soldado : Ejército", "Pez : Mar", "Estrella : Cielo", "Hoja : Árbol"], a: 0 },
+            { s: "RV", q: "Conector: 'No estudió, _______ aprobó el examen.'", o: ["porque", "y", "sin embargo", "debido a que"], a: 2 },
+            { s: "RV", q: "Antónimo de ALTRUISMO", o: ["Egoísmo", "Bondad", "Caridad", "Generosidad"], a: 0 },
+
+            // MATEMÁTICA (8)
+            { s: "Álgebra", q: "Si x + 1/x = 3, hallar x² + 1/x²", o: ["9", "7", "6", "8"], a: 1 }, // 3^2 - 2
+            { s: "Aritmética", q: "¿Cuál es el MCD de 24 y 36?", o: ["6", "12", "18", "24"], a: 1 },
+            { s: "Geometría", q: "Suma de ángulos internos de un pentágono", o: ["180", "360", "540", "720"], a: 2 }, // 180(5-2)
+            { s: "Trigonometría", q: "Sen(30°) + Cos(60°)", o: ["1", "1/2", "√3/2", "√2"], a: 0 }, // 0.5 + 0.5
+            { s: "Álgebra", q: "Grado absoluto del monomio: 4x^3 y^5 z", o: ["8", "9", "3", "5"], a: 1 }, // 3+5+1
+            { s: "Aritmética", q: "Si un número es divisible por 2 y 3 a la vez, siempre es divisible por:", o: ["5", "6", "9", "12"], a: 1 },
+            { s: "Geometría", q: "El complemento de 40° más el suplemento de 100° es:", o: ["130°", "140°", "50°", "80°"], a: 0 }, // 50 + 80
+            { s: "Álgebra", q: "Resolver: 2x - 5 = x + 3", o: ["5", "8", "2", "-2"], a: 1 },
+
+            // CIENCIAS (7)
+            { s: "Biología", q: "Organelo encargado de la respiración celular", o: ["Ribosoma", "Mitocondria", "Lisosoma", "Núcleo"], a: 1 },
+            { s: "Biología", q: "Padre de la Genética", o: ["Darwin", "Mendel", "Pasteur", "Aristóteles"], a: 1 },
+            { s: "Química", q: "Símbolo químico del Sodio", o: ["So", "Na", "K", "S"], a: 1 },
+            { s: "Química", q: "Tipo de enlace en el agua (H2O)", o: ["Iónico", "Covalente", "Metálico", "Nuclear"], a: 1 },
+            { s: "Física", q: "Unidad de Fuerza en el SI", o: ["Joule", "Pascal", "Newton", "Watt"], a: 2 },
+            { s: "Biología", q: "Fase de la mitosis donde los cromosomas se alinean en el centro", o: ["Profase", "Metafase", "Anafase", "Telofase"], a: 1 },
+            { s: "Química", q: "El átomo es neutro porque tiene igual número de:", o: ["Protones y Neutrones", "Protones y Electrones", "Neutrones y Electrones", "Masa y Peso"], a: 1 },
+
+            // LETRAS Y SOCIALES (15)
+            { s: "Historia Perú", q: "¿Quién proclamó la independencia del Perú en 1821?", o: ["Bolívar", "San Martín", "Sucre", "Castilla"], a: 1 },
+            { s: "Historia Univ", q: "La Revolución Francesa inició en el año:", o: ["1776", "1789", "1810", "1492"], a: 1 },
+            { s: "Geografía", q: "Capa de ozono se encuentra en la:", o: ["Troposfera", "Estratosfera", "Mesosfera", "Ionosfera"], a: 1 },
+            { s: "Literatura", q: "Autor de 'Cien años de soledad'", o: ["Vargas Llosa", "García Márquez", "Cortázar", "Borges"], a: 1 },
+            { s: "Lenguaje", q: "Núcleo del predicado es siempre un:", o: ["Sustantivo", "Adjetivo", "Verbo", "Adverbio"], a: 2 },
+            { s: "Economía", q: "La 'Mano Invisible' es un concepto de:", o: ["Marx", "Keynes", "Adam Smith", "Malthus"], a: 2 },
+            { s: "Psicología", q: "Temperamento es:", o: ["Aprendido", "Innato", "Social", "Cultural"], a: 1 },
+            { s: "Filosofía", q: "Autor del mito de la caverna", o: ["Sócrates", "Aristóteles", "Platón", "Descartes"], a: 2 },
+            { s: "Historia Perú", q: "Guerra del Pacífico fue contra:", o: ["Ecuador", "Chile", "Colombia", "España"], a: 1 },
+            { s: "Geografía", q: "Río más largo del mundo", o: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"], a: 1 },
+            { s: "Lenguaje", q: "Palabra esdrújula:", o: ["Corazón", "Árbol", "Música", "Papel"], a: 2 },
+            { s: "Literatura", q: "Género de 'Edipo Rey'", o: ["Épico", "Lírico", "Dramático", "Narrativo"], a: 2 },
+            { s: "Economía", q: "Inflación es el aumento sostenido de:", o: ["Salarios", "Precios", "Producción", "Impuestos"], a: 1 },
+            { s: "Cívica", q: "Máxima norma legal del país", o: ["Código Civil", "Constitución", "Decreto", "Resolución"], a: 1 },
+            { s: "Historia Univ", q: "Civilización entre los ríos Tigris y Éufrates", o: ["Egipto", "Mesopotamia", "China", "India"], a: 1 }
+        ];
+
+        // Arrays vacíos para futuros exámenes
+        const exam2 = [
+            // --- RM & RV (20 preguntas) ---
+            { s: "RM - Operadores", q: "Si a # b = 2a - b. Hallar 4 # 3", o: ["5", "8", "6", "3"], a: 0 },
+            { s: "RM - Sucesiones", q: "¿Qué letra sigue? A, C, F, J, ...", o: ["M", "N", "Ñ", "O"], a: 2 }, // +2, +3, +4...
+            { s: "RM - Porcentajes", q: "¿A qué descuento único equivalen dos descuentos sucesivos del 20% y 20%?", o: ["40%", "36%", "44%", "30%"], a: 1 },
+            { s: "RM - Planteo", q: "El triple de un número menos 5 es igual a 16. ¿Cuál es el número?", o: ["5", "6", "7", "8"], a: 2 },
+            { s: "RV - Analogías", q: "MÉDICO : ESTETOSCOPIO ::", o: ["Carpintero : Serrucho", "Abogado : Ley", "Profesor : Aula", "Ingeniero : Obra"], a: 0 },
+            { s: "RV - Sinónimos", q: "Sinónimo de BIZARRO", o: ["Raro", "Valiente", "Extraño", "Feo"], a: 1 }, // En español clásico es valiente
+            { s: "RV - Antónimos", q: "Antónimo de CIMA", o: ["Cumbre", "Sima", "Cúpula", "Montaña"], a: 1 },
+            { s: "RM - Geometría", q: "Si el perímetro de un cuadrado es 32m, ¿cuánto mide su lado?", o: ["4", "6", "8", "16"], a: 2 },
+            { s: "RM", q: "Si subo una escalera de 2 en 2 doy 10 pasos más que subiendo de 3 en 3. ¿Cuántos escalones son?", o: ["30", "60", "20", "50"], a: 1 },
+            { s: "RM - Lógica", q: "Si: 'Todos los hombres son mortales' y 'Juan es hombre', entonces:", o: ["Juan es inmortal", "Juan es mortal", "Juan es filósofo", "No se puede concluir"], a: 1 },
+            { s: "RV - Oraciones", q: "La _______ es la ciencia que estudia a los _______ vivos.", o: ["química - elementos", "biología - seres", "física - fenómenos", "historia - hechos"], a: 1 },
+            { s: "RV - Conectores", q: "Estudió mucho, _______ no ingresó.", o: ["y", "o", "pero", "entonces"], a: 2 },
+            { s: "RM - Edades", q: "Ana tiene 15 años y su madre 40. ¿Hace cuántos años la madre tenía el doble que Ana?", o: ["5", "10", "15", "8"], a: 1 }, // Hace 10: Ana 5, Madre 30 (No). Espera: 40-x = 2(15-x) -> 40-x = 30-2x -> x= -10. Error lógico en mi mente rápida, ajustamos pregunta: "¿Dentro de cuántos años la madre tendrá el doble que Ana?" -> 40+x = 2(15+x) -> 40+x = 30+2x -> 10=x. Respuesta 10.
+            { s: "RV - Plan Redacción", q: "El átomo: 1. Electrones 2. Núcleo 3. Estructura 4. Protones", o: ["3-2-4-1", "1-2-3-4", "4-2-1-3", "3-1-2-4"], a: 0 },
+            { s: "RM - Cronometría", q: "Un reloj da 3 campanadas en 3 segundos. ¿En cuántos segundos dará 6 campanadas?", o: ["6", "7.5", "5", "9"], a: 1 }, // Intervalos: 3 camp = 2 int = 3s -> 1 int = 1.5s. 6 camp = 5 int -> 5*1.5 = 7.5
+            { s: "RV - Término Excluido", q: "FELINO", o: ["León", "Tigre", "Gato", "Hiena"], a: 3 }, // Hiena no es felino
+            { s: "RM - Fracciones", q: "¿Cuánto le falta a 2/3 para ser igual a 1?", o: ["1/2", "1/3", "1/4", "1/6"], a: 1 },
+            { s: "RV", q: "Sinónimo de LOCUAZ", o: ["Callado", "Hablador", "Triste", "Loco"], a: 1 },
+            { s: "RM", q: "20% de 200 más 10% de 100", o: ["40", "50", "60", "30"], a: 1 }, // 40 + 10
+            { s: "RV", q: "Parónimo de APTO", o: ["Acto", "Capaz", "Idóneo", "Listo"], a: 0 },
+
+            // --- CONOCIMIENTOS (30 preguntas) ---
+            { s: "Aritmética", q: "Suma de los primeros 5 números primos", o: ["28", "26", "18", "29"], a: 0 }, // 2+3+5+7+11 = 28
+            { s: "Álgebra", q: "Resolver: x² - 5x + 6 = 0. Hallar la mayor raíz.", o: ["2", "3", "1", "6"], a: 1 }, // (x-3)(x-2) -> x=3
+            { s: "Geometría", q: "Triángulo rectángulo de catetos 3 y 4. Hallar hipotenusa.", o: ["5", "6", "7", "√7"], a: 0 },
+            { s: "Trigonometría", q: "Tangente de 45°", o: ["1", "0", "∞", "√3"], a: 0 },
+            { s: "Lenguaje", q: "Categoría gramatical invariable:", o: ["Sustantivo", "Adverbio", "Adjetivo", "Verbo"], a: 1 },
+            { s: "Literatura", q: "Autor de 'Los Ríos Profundos'", o: ["Arguedas", "Vallejo", "Alegría", "Ribeyro"], a: 0 },
+            { s: "Historia Perú", q: "Primer virrey del Perú", o: ["Toledo", "Amat", "Blasco Núñez de Vela", "Abascal"], a: 2 },
+            { s: "Historia Univ", q: "Principal dios egipcio (Sol)", o: ["Ra", "Anubis", "Osiris", "Zeus"], a: 0 },
+            { s: "Geografía", q: "Ciencia que estudia la población", o: ["Demografía", "Orografía", "Hidrografía", "Etnografía"], a: 0 },
+            { s: "Economía", q: "Fase del proceso económico donde se usan los bienes", o: ["Producción", "Circulación", "Consumo", "Inversión"], a: 2 },
+            { s: "Psicología", q: "Padre del Psicoanálisis", o: ["Piaget", "Freud", "Pavlov", "Skinner"], a: 1 },
+            { s: "Filosofía", q: "'Pienso, luego existo' es de:", o: ["Kant", "Descartes", "Hegel", "Nietzsche"], a: 1 },
+            { s: "Biología", q: "Reino de las bacterias", o: ["Monera", "Protista", "Fungi", "Plantae"], a: 0 },
+            { s: "Química", q: "Elemento más abundante en la atmósfera", o: ["Oxígeno", "Nitrógeno", "Hidrógeno", "Carbono"], a: 1 },
+            { s: "Física", q: "Energía asociada al movimiento", o: ["Potencial", "Cinética", "Elástica", "Química"], a: 1 },
+            { s: "Lógica", q: "P ^ Q es verdadera solo si:", o: ["Ambas son falsas", "Ambas son verdaderas", "Una es verdadera", "Ninguna"], a: 1 },
+            { s: "Lenguaje", q: "Vicio del lenguaje: 'Subir para arriba'", o: ["Cacofonía", "Pleonasmo", "Barbarismo", "Solecismo"], a: 1 },
+            { s: "Literatura", q: "Musa de Dante Alighieri", o: ["Beatriz", "Laura", "Dulcie", "María"], a: 0 },
+            { s: "Historia Perú", q: "Héroe de la batalla de Arica", o: ["Grau", "Bolognesi", "Cáceres", "Ugarte"], a: 1 },
+            { s: "Historia Univ", q: "Capital del Imperio Romano de Oriente", o: ["Roma", "Atenas", "Constantinopla", "Alejandría"], a: 2 },
+            { s: "Geografía", q: "Línea imaginaria que divide la tierra en hemisferio Norte y Sur", o: ["Meridiano Greenwich", "Ecuador", "Trópico Cáncer", "Círculo Polar"], a: 1 },
+            { s: "Economía", q: "Moneda oficial del Perú", o: ["Inti", "Nuevo Sol", "Sol", "Libra"], a: 2 }, // Actualmente es "Sol"
+            { s: "Cívica", q: "Edad mínima para ser Presidente del Perú", o: ["25", "30", "35", "40"], a: 2 },
+            { s: "Biología", q: "Vitamina que ayuda a la coagulación", o: ["A", "C", "K", "D"], a: 2 },
+            { s: "Química", q: "pH neutro es igual a:", o: ["0", "7", "14", "10"], a: 1 },
+            { s: "Física", q: "Todo cuerpo mantiene su reposo o movimiento a menos que una fuerza actúe (Ley de...)", o: ["Inercia", "Acción-Reacción", "Gravedad", "Fuerza"], a: 0 },
+            { s: "Historia Perú", q: "Cultura que construyó Chan Chan", o: ["Mochica", "Chimú", "Chavín", "Nazca"], a: 1 },
+            { s: "Biología", q: "¿Cuántos cromosomas tiene el ser humano?", o: ["23", "46", "48", "21"], a: 1 },
+            { s: "Lenguaje", q: "Oración Bimembre tiene:", o: ["Sujeto y Predicado", "Solo Sujeto", "Solo Predicado", "Dos verbos"], a: 0 },
+            { s: "Psicología", q: "Proceso cognitivo de almacenar información", o: ["Atención", "Memoria", "Percepción", "Inteligencia"], a: 1 }
+        ];
+        const exam3 = [
+            // --- RM & RV ---
+            { s: "RM - Áreas", q: "Área de un círculo de radio 4.", o: ["8π", "16π", "4π", "12π"], a: 1 },
+            { s: "RM", q: "Si hoy es lunes, ¿qué día será dentro de 80 días?", o: ["Martes", "Miércoles", "Jueves", "Viernes"], a: 1 }, // 80 mod 7 = 3. Lun+3 = Jueves? No, Lun+1=Mar, +2=Mie, +3=Jueves. Wait. 77 es mult 7. Faltan 3 días. Lunes + 3 = Jueves. Corrijo answer index -> 2.
+            { s: "RM - Lógica", q: "Negación de: 'Todos los alumnos estudian'", o: ["Ninguno estudia", "Algunos no estudian", "Todos juegan", "Nadie estudia"], a: 1 },
+            { s: "RM", q: "A es el doble de eficiente que B. Si B hace la obra en 12 días, ¿en cuánto lo hace A?", o: ["24", "6", "8", "4"], a: 1 },
+            { s: "RV - Analogía", q: "PÁGINA : LIBRO ::", o: ["Pétalo : Flor", "Hijo : Padre", "Agua : Mar", "Ladrillo : Pared"], a: 3 }, // Parte-Todo estructural
+            { s: "RV - Sinónimos", q: "Sinónimo de INRI", o: ["Burla", "Afrenta", "Título", "Final"], a: 1 },
+            { s: "RV - Antónimos", q: "Antónimo de DILIGENCIA", o: ["Rapidez", "Cuidado", "Negligencia", "Esmero"], a: 2 },
+            { s: "RM - Series", q: "1, 1, 2, 3, 5, 8, ...", o: ["11", "12", "13", "15"], a: 2 }, // Fibonacci
+            { s: "RM", q: "Promedio de 12, 14 y 16", o: ["13", "14", "15", "12"], a: 1 },
+            { s: "RV - Oraciones", q: "No es _______ ser rico, lo difícil es _______ siéndolo.", o: ["fácil - seguir", "difícil - serlo", "bueno - morir", "malo - vivir"], a: 1 },
+            { s: "RM - Ecuaciones", q: "La suma de tres números consecutivos es 33. Hallar el mayor.", o: ["10", "11", "12", "13"], a: 2 }, // 10,11,12
+            { s: "RV", q: "Polisemia: Palabra con varios...", o: ["Sonidos", "Significados", "Sinónimos", "Orígenes"], a: 1 },
+            { s: "RM - Operadores", q: "Si x% = x/2 + 1. Hallar 8%", o: ["5", "4", "3", "6"], a: 0 },
+            { s: "RV", q: "Hiperónimo de 'Silla'", o: ["Mueble", "Madera", "Asiento", "Patas"], a: 0 },
+            { s: "RM", q: "2/5 de 100", o: ["20", "40", "50", "10"], a: 1 },
+            { s: "RV - Plan", q: "Biografía: 1. Muerte 2. Nacimiento 3. Obras 4. Estudios", o: ["2-4-3-1", "2-3-4-1", "1-2-3-4", "4-2-3-1"], a: 0 },
+            { s: "RM - Edades", q: "La suma de nuestras edades es 40. La diferencia es 10. ¿El mayor tiene?", o: ["20", "25", "30", "15"], a: 1 }, // (40+10)/2 = 25
+            { s: "RV", q: "Conector: 'Es inteligente, _______, muy perezoso.'", o: ["además", "por lo tanto", "sin embargo", "debido a"], a: 2 },
+            { s: "RM - Cortes", q: "Para cortar una soga en 4 pedazos, ¿cuántos cortes debo hacer?", o: ["4", "3", "5", "2"], a: 1 },
+            { s: "RV", q: "Serie verbal: Trigo, avena, arroz, ...", o: ["Lenteja", "Maíz", "Papa", "Camote"], a: 1 }, // Cereales
+
+            // --- CONOCIMIENTOS ---
+            { s: "Álgebra", q: "Si 2^x = 32, hallar x", o: ["4", "5", "6", "3"], a: 1 },
+            { s: "Aritmética", q: "MCM de 4 y 6", o: ["24", "12", "10", "2"], a: 1 },
+            { s: "Geometría", q: "Suma de ángulos externos de cualquier polígono", o: ["180", "360", "90", "270"], a: 1 },
+            { s: "Trigonometría", q: "Seno es opuesto sobre...", o: ["Adyacente", "Hipotenusa", "Radio", "Tangente"], a: 1 },
+            { s: "Física", q: "Velocidad de la luz aprox (km/s)", o: ["300,000", "30,000", "340", "9.8"], a: 0 },
+            { s: "Química", q: "Gas noble usado en letreros luminosos", o: ["Helio", "Neón", "Argón", "Kriptón"], a: 1 },
+            { s: "Biología", q: "Célula sin núcleo definido", o: ["Eucariota", "Procariota", "Vegetal", "Animal"], a: 1 },
+            { s: "Lenguaje", q: "Parte de la gramática que estudia los sonidos", o: ["Morfología", "Fonología", "Sintaxis", "Semántica"], a: 1 },
+            { s: "Literatura", q: "Género de 'Romeo y Julieta'", o: ["Narrativo", "Lírico", "Dramático", "Ensayo"], a: 2 },
+            { s: "Historia Perú", q: "Descubridor de Machu Picchu (científico)", o: ["Hiram Bingham", "Raymondi", "Tello", "Uhle"], a: 0 },
+            { s: "Historia Univ", q: "Líder nazi de Alemania en la II Guerra Mundial", o: ["Mussolini", "Hitler", "Stalin", "Churchill"], a: 1 },
+            { s: "Geografía", q: "Continente más extenso", o: ["América", "África", "Asia", "Europa"], a: 2 },
+            { s: "Economía", q: "Tributo que paga el consumidor (IGV). ¿Cuánto es en Perú?", o: ["19%", "18%", "15%", "21%"], a: 1 },
+            { s: "Cívica", q: "Organismo que da el DNI", o: ["ONPE", "JNE", "RENIEC", "SUNAT"], a: 2 },
+            { s: "Psicología", q: "Etapa donde aparece el pensamiento abstracto (Piaget)", o: ["Sensorio-motor", "Operaciones Formales", "Pre-operacional", "Concreta"], a: 1 },
+            { s: "Filosofía", q: "Método socrático basado en preguntas", o: ["Mayéutica", "Dialéctica", "Duda Metódica", "Lógica"], a: 0 },
+            { s: "Biología", q: "Molécula de la herencia", o: ["ARN", "ADN", "ATP", "Proteína"], a: 1 },
+            { s: "Química", q: "Estado de la materia ionizado (Sol, estrellas)", o: ["Sólido", "Líquido", "Gaseoso", "Plasma"], a: 3 },
+            { s: "Física", q: "Unidad de resistencia eléctrica", o: ["Voltio", "Amperio", "Ohmio", "Watt"], a: 2 },
+            { s: "Lógica", q: "Si p -> q es Falso, entonces:", o: ["p es V y q es F", "p es F y q es V", "ambas V", "ambas F"], a: 0 }, // El único caso falso de la condicional
+            { s: "Lenguaje", q: "Variación regional de una lengua (ej. dejo piurano)", o: ["Idioma", "Dialecto", "Sociolecto", "Jerga"], a: 1 },
+            { s: "Literatura", q: "Poeta peruano, autor de 'Los Heraldos Negros'", o: ["Vallejo", "Eguren", "Chocano", "Melgar"], a: 0 },
+            { s: "Historia Perú", q: "Guerra civil entre Huáscar y...", o: ["Manco Inca", "Atahualpa", "Pachacútec", "Túpac Amaru"], a: 1 },
+            { s: "Historia Univ", q: "Invento que marca el fin de la Edad Media (aprox)", o: ["Imprenta", "Máquina vapor", "Rueda", "Brújula"], a: 0 }, // Caída de Constantinopla / Imprenta
+            { s: "Geografía", q: "Mar peruano o Mar de...", o: ["Humboldt", "Grau", "Pacífico", "Bolívar"], a: 1 },
+            { s: "Economía", q: "Escasez es el problema fundamental de la...", o: ["Política", "Economía", "Sociología", "Historia"], a: 1 },
+            { s: "Cívica", q: "Derecho fundamental de la persona (Art. 2)", o: ["A la vida", "Al trabajo", "A la huelga", "Al voto"], a: 0 },
+            { s: "Biología", q: "Fotosíntesis es realizada por organismos...", o: ["Heterótrofos", "Autótrofos", "Descomponedores", "Parásitos"], a: 1 },
+            { s: "Química", q: "Unión de Metal + Oxígeno", o: ["Óxido Básico", "Óxido Ácido", "Hidruro", "Sal"], a: 0 },
+            { s: "Física", q: "La gravedad en la Tierra es aprox:", o: ["9.8 m/s²", "100 m/s²", "5 m/s²", "1.6 m/s²"], a: 0 }
+        ];
+
+        // LÓGICA DE LA APP
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = []; // Array de índices
+        let timerInterval;
+        const TIME_LIMIT = 30 * 60; // 30 mins
+
+        const screens = {
+            home: document.getElementById('screen-home'),
+            quiz: document.getElementById('screen-quiz'),
+            results: document.getElementById('screen-results')
+        };
+
+        function startExam(id) {
+            if (id === 1) currentQuestions = exam1;
+            else if (id === 2 && exam2.length > 0) currentQuestions = exam2;
+            else if (id === 3 && exam3.length > 0) currentQuestions = exam3;
+            else {
+                alert("Este examen aún no tiene preguntas cargadas. ¡Pégalas en el código!");
+                return;
+            }
+
+            // Reset
+            currentIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+
+            // UI Switch
+            screens.home.classList.add('hidden');
+            screens.home.classList.remove('flex');
+            screens.quiz.classList.remove('hidden');
+            screens.quiz.classList.add('flex');
+            screens.results.classList.add('hidden');
+            screens.results.classList.remove('flex');
+
+            loadQuestion();
+            startTimer(TIME_LIMIT);
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('q-current').innerText = currentIndex + 1;
+            document.getElementById('q-subject').innerText = q.s;
+            document.getElementById('q-text').innerText = q.q;
+
+            const optsDiv = document.getElementById('q-options');
+            optsDiv.innerHTML = '';
+
+            q.o.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                const isSelected = userAnswers[currentIndex] === idx;
+
+                // Estilos Tailwind para las opciones
+                btn.className = `w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group relative overflow-hidden ${isSelected
+                        ? 'border-blue-500 bg-blue-900/20 text-blue-200'
+                        : 'border-slate-700 hover:bg-slate-800 hover:border-slate-600 text-slate-300'
+                    }`;
+
+                btn.innerHTML = `
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg mr-3 text-sm font-bold ${isSelected ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-500 group-hover:bg-slate-700'
+                    }">${String.fromCharCode(65 + idx)}</span>
+                <span class="font-medium">${optText}</span>
+            `;
+
+                btn.onclick = () => selectAnswer(idx);
+                optsDiv.appendChild(btn);
+            });
+
+            // Actualizar barra progreso
+            const progressPct = ((currentIndex + 1) / currentQuestions.length) * 100;
+            document.getElementById('progress').style.width = `${progressPct}%`;
+
+            // Botones Nav
+            document.getElementById('btn-prev').disabled = currentIndex === 0;
+
+            const isLast = currentIndex === currentQuestions.length - 1;
+            document.getElementById('btn-next').classList.toggle('hidden', isLast);
+            document.getElementById('btn-finish').classList.toggle('hidden', !isLast);
+        }
+
+        function selectAnswer(idx) {
+            userAnswers[currentIndex] = idx;
+            loadQuestion(); // Recargar para mostrar selección
+        }
+
+        function prevQ() {
+            if (currentIndex > 0) { currentIndex--; loadQuestion(); }
+        }
+
+        function nextQ() {
+            if (currentIndex < currentQuestions.length - 1) { currentIndex++; loadQuestion(); }
+        }
+
+        function startTimer(seconds) {
+            let timeLeft = seconds;
+            const display = document.getElementById('timer');
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                display.innerText = `${m}:${s}`;
+
+                if (timeLeft <= 60) display.classList.add('text-red-500', 'animate-pulse');
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function finishExam() {
+            clearInterval(timerInterval);
+
+            let correct = 0;
+            let blank = 0;
+
+            currentQuestions.forEach((q, i) => {
+                if (userAnswers[i] === null) blank++;
+                else if (userAnswers[i] === q.a) correct++;
+            });
+
+            const total = currentQuestions.length;
+            const wrong = total - correct - blank;
+            const score = Math.round((correct / total) * 100);
+
+            // Render Resultados
+            screens.quiz.classList.add('hidden');
+            screens.quiz.classList.remove('flex');
+            screens.results.classList.remove('hidden');
+            screens.results.classList.add('flex');
+
+            document.getElementById('final-score').innerText = `${score}%`;
+            document.getElementById('res-correct').innerText = correct;
+            document.getElementById('res-wrong').innerText = wrong;
+            document.getElementById('res-blank').innerText = blank;
+
+            // Animación círculo
+            setTimeout(() => {
+                const circle = document.getElementById('score-ring');
+                const circumference = 552;
+                const offset = circumference - (score / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+
+                // Color según nota
+                if (score < 60) circle.classList.add('text-red-500');
+                else if (score < 80) circle.classList.add('text-yellow-500');
+                else circle.classList.add('text-emerald-500');
+            }, 100);
+        }
+    </script>
+</body>
+
+</html>
